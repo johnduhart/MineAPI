@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -174,15 +173,15 @@ namespace MineAPI.Network
         {
             Log.TraceFormat("C->S {0}", packet.GetType());
 
+            PacketLocator.PacketInfo packetInfo = _packetLocator.GetInfoForPacket(packet);
+            
             var dataStream = new MemoryStream();
             var dataWriter = new MinecraftStreamWriter(dataStream);
-            packet.WritePacket(dataWriter);
-
-            byte packetId = _packetLocator.GetIdForPacket(packet);
+            packetInfo.WritePacket(packet, dataWriter);
 
             // Write packet length and ID
             _writer.WriteVarInt((int) (dataStream.Length + 1));
-            _writer.WriteVarInt(packetId);
+            _writer.WriteVarInt(packetInfo.Id);
             _baseStream.Write(dataStream.GetBuffer(), 0, (int) dataStream.Length);
 
             _networkStream.Flush();
@@ -238,21 +237,23 @@ namespace MineAPI.Network
         private IPacket ReadPacket(byte packetId, byte[] data)
         {
             // TODO: fuck. direction wont work
-            IPacket packet = _packetLocator.FindPacket(packetId, PacketDirection.Clientbound, _currentState);
+            PacketLocator.PacketInfo packetInfo = _packetLocator.FindPacketInfo(packetId, PacketDirection.Clientbound, _currentState);
 
-            if (packet == null)
+            if (packetInfo == null)
             {
                 Log.WarnFormat("S->C Unkown packet 0x{0:X2}", packetId);
                 return null;
             }
 
+            IPacket packet;
+
             using (var memoryStream = new MemoryStream(data))
             using (var reader = new MinecraftStreamReader(memoryStream))
             {
-                packet.ReadPacket(reader);
+                packet = packetInfo.ReadPacket(reader);
 
                 if (memoryStream.Position < data.Length)
-                    Log.WarnFormat("Packet {0} did not read all available data", packet.GetType().Name);
+                    Log.WarnFormat("Packet {0} did not read all available data", packetInfo.GetType().Name);
             }
 
             return packet;
@@ -267,78 +268,6 @@ namespace MineAPI.Network
                 Log.DebugFormat("Changing network state from {0} to {1}", _currentState, nextState);
                 _currentState = nextState;
             }
-        }
-    }
-
-    class PacketLocator
-    {
-        private class PacketContainer
-        {
-            public PacketContainer()
-            {
-                ClientboudPackets = new Dictionary<byte, Type>();
-                ServerboundPackets = new Dictionary<byte, Type>();
-            }
-
-            public IDictionary<byte, Type> ClientboudPackets { get; set; }
-            public IDictionary<byte, Type> ServerboundPackets { get; set; }
-
-            public IDictionary<byte, Type> this[PacketDirection direction]
-            {
-                get
-                {
-                    if (direction == PacketDirection.Serverbound)
-                        return ServerboundPackets;
-
-                    // Clientbound and both ways
-                    return ClientboudPackets;
-                }
-            }
-        }
-
-        private IDictionary<NetworkState, PacketContainer> _packet; 
-
-        public void RegisterPackets()
-        {
-            _packet = new Dictionary<NetworkState, PacketContainer>();
-
-            Type packetType = typeof (IPacket);
-            var packets = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(t => packetType.IsAssignableFrom(t))
-                .Select(t => new
-                {
-                    type = t,
-                    attribute = t.GetCustomAttribute<PacketAttribute>()
-                })
-                .Where(x => x.attribute != null)
-                .ToList();
-
-            foreach (NetworkState state in Enum.GetValues(typeof(NetworkState)))
-            {
-                var container = new PacketContainer();
-
-                foreach (var packet in packets.Where(x => x.attribute.State == state))
-                {
-                    container[packet.attribute.Direction].Add(packet.attribute.Id, packet.type);
-                }
-
-                _packet.Add(state, container);
-            }
-        }
-
-        public IPacket FindPacket(byte id, PacketDirection direction, NetworkState state)
-        {
-            var types = _packet[state][direction];
-            Type packetType;
-            if (!types.TryGetValue(id, out packetType))
-                return null;
-
-            return (IPacket) Activator.CreateInstance(packetType);
-        }
-
-        public byte GetIdForPacket(IPacket packet)
-        {
-            return packet.GetType().GetCustomAttribute<PacketAttribute>().Id;
         }
     }
 }

@@ -63,9 +63,12 @@
     <Compile Include="NetworkState.cs" />
     <Compile Include="PacketAttribute.cs" />
     <Compile Include="PacketDirection.cs" />
+    <Compile Include="PacketLocator.cs" />
+    <Compile Include="Packets\FieldType.cs" />
     <Compile Include="Packets\HandshakePacket.cs" />
     <Compile Include="Packets\IStateChangePacket.cs" />
     <Compile Include="Packets\Login\LoginStartPacket.cs" />
+    <Compile Include="Packets\PacketFieldAttribute.cs" />
     <Compile Include="Packets\Status\RequestPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
