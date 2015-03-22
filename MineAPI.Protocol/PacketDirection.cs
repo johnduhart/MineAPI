@@ -1,4 +1,4 @@
-﻿namespace MineAPI.Network
+﻿namespace MineAPI.Protocol
 {
     public enum PacketDirection
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using MineAPI.Network;
-using MineAPI.Network.Packets;
-using MineAPI.Network.Packets.Login;
-using MineAPI.Network.Packets.Status;
+using MineAPI.Protocol;
+using MineAPI.Protocol.Packets;
+using MineAPI.Protocol.Packets.Login;
 using Serilog;
 
 namespace MineAPI.Testbed

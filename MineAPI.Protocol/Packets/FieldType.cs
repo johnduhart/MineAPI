@@ -1,4 +1,4 @@
-﻿namespace MineAPI.Network.Packets
+﻿namespace MineAPI.Protocol.Packets
 {
     public enum FieldType
     {

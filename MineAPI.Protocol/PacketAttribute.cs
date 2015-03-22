@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace MineAPI.Network
+namespace MineAPI.Protocol
 {
     [AttributeUsage(AttributeTargets.Struct)]
     [BaseTypeRequired(typeof(IPacket))]

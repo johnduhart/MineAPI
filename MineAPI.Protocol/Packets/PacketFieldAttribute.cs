@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace MineAPI.Network.Packets
+namespace MineAPI.Protocol.Packets
 {
     [AttributeUsage(AttributeTargets.Field)]
     [MeansImplicitUse]

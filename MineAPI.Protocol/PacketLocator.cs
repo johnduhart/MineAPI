@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MineAPI.Common.Logging;
-using MineAPI.Network.IO;
-using MineAPI.Network.Packets;
+using MineAPI.Protocol.IO;
+using MineAPI.Protocol.Packets;
 
-namespace MineAPI.Network
+namespace MineAPI.Protocol
 {
-    class PacketLocator
+    public class PacketLocator
     {
         private static readonly ILog Log = LogProvider.For<PacketLocator>();
 
@@ -183,7 +183,7 @@ namespace MineAPI.Network
             }
         }
 
-        internal class PacketFieldAction
+        public class PacketFieldAction
         {
             public Action<IPacket, IMinecraftStreamReader> ReaderAction { get; set; }
             public Action<IPacket, IMinecraftStreamWriter> WriterAction { get; set; }

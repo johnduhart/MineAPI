@@ -1,6 +1,4 @@
-﻿using MineAPI.Network.IO;
-
-namespace MineAPI.Network.Packets
+﻿namespace MineAPI.Protocol.Packets
 {
     [Packet(0x00, PacketDirection.Serverbound)]
     public struct HandshakePacket : IPacket, IStateChangePacket

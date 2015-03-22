@@ -1,6 +1,4 @@
-﻿using MineAPI.Network.IO;
-
-namespace MineAPI.Network.Packets.Login
+﻿namespace MineAPI.Protocol.Packets.Login
 {
     [Packet(0x00, PacketDirection.Serverbound, State = NetworkState.Login)]
     public struct LoginStartPacket : IPacket

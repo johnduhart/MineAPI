@@ -54,22 +54,7 @@
     <Compile Include="Crypto\BerDecodeException.cs" />
     <Compile Include="Crypto\Cryptography.cs" />
     <Compile Include="IO\AesStream.cs" />
-    <Compile Include="IO\MinecraftStreamReader.cs" />
     <Compile Include="NetworkEngine.cs" />
-    <Compile Include="IO\IMinecraftStreamReader.cs" />
-    <Compile Include="IO\IMinecraftStreamWriter.cs" />
-    <Compile Include="IO\MinecraftStreamWriter.cs" />
-    <Compile Include="IPacket.cs" />
-    <Compile Include="NetworkState.cs" />
-    <Compile Include="PacketAttribute.cs" />
-    <Compile Include="PacketDirection.cs" />
-    <Compile Include="PacketLocator.cs" />
-    <Compile Include="Packets\FieldType.cs" />
-    <Compile Include="Packets\HandshakePacket.cs" />
-    <Compile Include="Packets\IStateChangePacket.cs" />
-    <Compile Include="Packets\Login\LoginStartPacket.cs" />
-    <Compile Include="Packets\PacketFieldAttribute.cs" />
-    <Compile Include="Packets\Status\RequestPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +64,10 @@
     <ProjectReference Include="..\MineAPI.Common\MineAPI.Common.csproj">
       <Project>{ad5ef901-d499-4c6a-a097-c7bdd85f2e5e}</Project>
       <Name>MineAPI.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MineAPI.Protocol\MineAPI.Protocol.csproj">
+      <Project>{b005fec7-8a84-4420-bcc4-e5a68d4e569d}</Project>
+      <Name>MineAPI.Protocol</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

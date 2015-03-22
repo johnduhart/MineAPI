@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace MineAPI.Network.IO
+namespace MineAPI.Protocol.IO
 {
     public class MinecraftStreamReader : IMinecraftStreamReader, IDisposable
     {

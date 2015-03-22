@@ -1,4 +1,4 @@
-﻿namespace MineAPI.Network.IO
+﻿namespace MineAPI.Protocol.IO
 {
     public interface IMinecraftStreamReader
     {

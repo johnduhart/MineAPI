@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BD401EF4-1E0B-4EB9-8D9D-F37B07C35C46}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{B005FEC7-8A84-4420-BCC4-E5A68D4E569D}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MineAPI.Testbed</RootNamespace>
-    <AssemblyName>MineAPI.Testbed</AssemblyName>
+    <RootNamespace>MineAPI.Protocol</RootNamespace>
+    <AssemblyName>MineAPI.Protocol</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,12 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Serilog">
-      <HintPath>..\packages\Serilog.1.4.204\lib\net45\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.FullNetFx">
-      <HintPath>..\packages\Serilog.1.4.204\lib\net45\Serilog.FullNetFx.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,21 +39,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="IO\IMinecraftStreamReader.cs" />
+    <Compile Include="IO\IMinecraftStreamWriter.cs" />
+    <Compile Include="IO\MinecraftStreamReader.cs" />
+    <Compile Include="IO\MinecraftStreamWriter.cs" />
+    <Compile Include="IPacket.cs" />
+    <Compile Include="NetworkState.cs" />
+    <Compile Include="PacketAttribute.cs" />
+    <Compile Include="PacketDirection.cs" />
+    <Compile Include="PacketLocator.cs" />
+    <Compile Include="Packets\FieldType.cs" />
+    <Compile Include="Packets\HandshakePacket.cs" />
+    <Compile Include="Packets\IStateChangePacket.cs" />
+    <Compile Include="Packets\Login\LoginStartPacket.cs" />
+    <Compile Include="Packets\PacketFieldAttribute.cs" />
+    <Compile Include="Packets\Status\RequestPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MineAPI.Network\MineAPI.Network.csproj">
-      <Project>{E5B06BEF-07F0-4616-8BA2-E1FC502D81F5}</Project>
-      <Name>MineAPI.Network</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MineAPI.Protocol\MineAPI.Protocol.csproj">
-      <Project>{b005fec7-8a84-4420-bcc4-e5a68d4e569d}</Project>
-      <Name>MineAPI.Protocol</Name>
+    <ProjectReference Include="..\MineAPI.Common\MineAPI.Common.csproj">
+      <Project>{ad5ef901-d499-4c6a-a097-c7bdd85f2e5e}</Project>
+      <Name>MineAPI.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,8 +13,10 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MineAPI.Common.Logging;
 using MineAPI.Network.Crypto;
 using MineAPI.Network.IO;
-using MineAPI.Network.Packets;
-using MineAPI.Network.Packets.Login;
+using MineAPI.Protocol;
+using MineAPI.Protocol.IO;
+using MineAPI.Protocol.Packets;
+using MineAPI.Protocol.Packets.Login;
 
 namespace MineAPI.Network
 {

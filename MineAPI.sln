@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30324.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineAPI.Network", "MineAPI.Network\MineAPI.Network.csproj", "{E5B06BEF-07F0-4616-8BA2-E1FC502D81F5}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1937B7ED-A7E9-4672-A440-FB1D5A45338F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineAPI.Testbed", "MineAPI.Testbed\MineAPI.Testbed.csproj", "{BD401EF4-1E0B-4EB9-8D9D-F37B07C35C46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineAPI.Protocol", "MineAPI.Protocol\MineAPI.Protocol.csproj", "{B005FEC7-8A84-4420-BCC4-E5A68D4E569D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{BD401EF4-1E0B-4EB9-8D9D-F37B07C35C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD401EF4-1E0B-4EB9-8D9D-F37B07C35C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD401EF4-1E0B-4EB9-8D9D-F37B07C35C46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B005FEC7-8A84-4420-BCC4-E5A68D4E569D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B005FEC7-8A84-4420-BCC4-E5A68D4E569D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B005FEC7-8A84-4420-BCC4-E5A68D4E569D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B005FEC7-8A84-4420-BCC4-E5A68D4E569D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

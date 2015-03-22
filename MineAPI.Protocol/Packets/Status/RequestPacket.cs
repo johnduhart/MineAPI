@@ -1,4 +1,4 @@
-﻿namespace MineAPI.Network.Packets.Status
+﻿namespace MineAPI.Protocol.Packets.Status
 {
     [Packet(0x00, PacketDirection.Serverbound, State = NetworkState.Status)]
     public struct StatusRequestPacket : IPacket
