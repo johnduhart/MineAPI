@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,11 +28,12 @@ namespace MineAPI.Network
 
         private readonly ConcurrentQueue<IPacket> _packetQueue = new ConcurrentQueue<IPacket>();
         private readonly MultiValueDictionary<Type, Action<IPacket>> _packetCallbacks = new MultiValueDictionary<Type, Action<IPacket>>();
+        private readonly ConcurrentBag<IObserver<IPacket>> _packetObservers = new ConcurrentBag<IObserver<IPacket>>(); 
         private readonly IPacketInfoSource _packetInfoSource = new PacketInfoSource();
 
         private NetworkState _currentState = NetworkState.None;
         private Thread _networkThread;
-        
+
         private TcpClient _client;
         private NetworkStream _networkStream;
         private Stream _baseStream;
@@ -40,6 +42,24 @@ namespace MineAPI.Network
         private bool _compressionEnabled;
         private int _compressionThreshold;
         private byte[] _sharedSecret;
+
+        public IObservable<IPacket> PacketStream
+        {
+            get
+            {
+                return Observable.Create<IPacket>(observer =>
+                {
+                    _packetObservers.Add(observer);
+
+
+                    return () =>
+                    {
+                        IObserver<IPacket> x;
+                        _packetObservers.TryTake(out x);
+                    };
+                });
+            }
+        } 
 
         public void Connect(IPEndPoint endPoint)
         {
@@ -139,6 +159,11 @@ namespace MineAPI.Network
                 {
                     callback(packet);
                 }
+            }
+
+            foreach (var observer in _packetObservers)
+            {
+                observer.OnNext(packet);
             }
 
             CheckStateChange(packet);

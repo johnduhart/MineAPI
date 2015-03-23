@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Reactive.Linq;
 using MineAPI.Network;
 using MineAPI.Protocol;
 using MineAPI.Protocol.Packets;
 using MineAPI.Protocol.Packets.Login;
+using MineAPI.Protocol.Packets.Play;
 using Serilog;
 
 namespace MineAPI.Testbed
@@ -47,6 +49,10 @@ namespace MineAPI.Testbed
             Console.WriteLine(pingResponse.Time);
 
             Console.ReadLine();*/
+
+            network.PacketStream
+                .OfType<KeepAlivePacket>()
+                .Subscribe(k => network.SendPacket(new KeepAlivePacket {Id = k.Id}));
 
             network.SendPacket(new HandshakePacket
             {
