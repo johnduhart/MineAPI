@@ -25,8 +25,8 @@ namespace MineAPI.Network
         private static readonly ILog Log = LogProvider.For<NetworkEngine>();
 
         private readonly ConcurrentQueue<IPacket> _packetQueue = new ConcurrentQueue<IPacket>();
-        private readonly MultiValueDictionary<Type, Action<IPacket>> _packetCallbacks = new MultiValueDictionary<Type, Action<IPacket>>(); 
-        private readonly PacketLocator _packetLocator;
+        private readonly MultiValueDictionary<Type, Action<IPacket>> _packetCallbacks = new MultiValueDictionary<Type, Action<IPacket>>();
+        private readonly IPacketInfoSource _packetInfoSource = new PacketInfoSource();
 
         private NetworkState _currentState = NetworkState.None;
         private Thread _networkThread;
@@ -38,12 +38,6 @@ namespace MineAPI.Network
         private IMinecraftStreamReader _reader;
         private bool _compressionEnabled;
         private byte[] _sharedSecret;
-
-        public NetworkEngine()
-        {
-            _packetLocator = new PacketLocator();
-            _packetLocator.RegisterPackets();
-        }
 
         public void Connect(IPEndPoint endPoint)
         {
@@ -175,11 +169,15 @@ namespace MineAPI.Network
         {
             Log.TraceFormat("C->S {0}", packet.GetType());
 
-            PacketLocator.PacketInfo packetInfo = _packetLocator.GetInfoForPacket(packet);
+            IPacketInfo packetInfo = _packetInfoSource.GetPacketInfo(packet);
+
+            // TODO: Error handling
+            if (packetInfo == null)
+                return;
             
             var dataStream = new MemoryStream();
             var dataWriter = new MinecraftStreamWriter(dataStream);
-            packetInfo.WritePacket(packet, dataWriter);
+            packetInfo.WritePacketToStream(packet, dataWriter);
 
             // Write packet length and ID
             _writer.WriteVarInt((int) (dataStream.Length + 1));
@@ -239,7 +237,7 @@ namespace MineAPI.Network
         private IPacket ReadPacket(byte packetId, byte[] data)
         {
             // TODO: fuck. direction wont work
-            PacketLocator.PacketInfo packetInfo = _packetLocator.FindPacketInfo(packetId, PacketDirection.Clientbound, _currentState);
+            IPacketInfo packetInfo = _packetInfoSource.GetPacketInfo(packetId, PacketDirection.Clientbound, _currentState);
 
             if (packetInfo == null)
             {
@@ -252,7 +250,7 @@ namespace MineAPI.Network
             using (var memoryStream = new MemoryStream(data))
             using (var reader = new MinecraftStreamReader(memoryStream))
             {
-                packet = packetInfo.ReadPacket(reader);
+                packet = packetInfo.ReadPacketFromStream(reader);
 
                 if (memoryStream.Position < data.Length)
                     Log.WarnFormat("Packet {0} did not read all available data", packetInfo.GetType().Name);
