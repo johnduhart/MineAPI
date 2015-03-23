@@ -1,4 +1,4 @@
-namespace MineAPI.Protocol.Packets.Play
+namespace MineAPI.Protocol.Packets.Play.Clientbound
 {
     [Packet(0x02, PacketDirection.Clientbound)]
     public struct ClientChatMessagePacket : IPacket

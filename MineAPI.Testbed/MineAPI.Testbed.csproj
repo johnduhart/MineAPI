@@ -67,6 +67,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MineAPI.Common\MineAPI.Common.csproj">
+      <Project>{AD5EF901-D499-4C6A-A097-C7BDD85F2E5E}</Project>
+      <Name>MineAPI.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MineAPI.Network\MineAPI.Network.csproj">
       <Project>{E5B06BEF-07F0-4616-8BA2-E1FC502D81F5}</Project>
       <Name>MineAPI.Network</Name>

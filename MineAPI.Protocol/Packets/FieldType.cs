@@ -13,6 +13,12 @@
         Double,
         String,
         VarInt,
-        ByteArray
+        ByteArray,
+        Location,
+        Vector3,
+        Vector3FixedPoint,
+        Vector3FixedPointByte,
+        UUID,
+        VarIntArray
     }
 }

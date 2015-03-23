@@ -199,7 +199,7 @@ namespace MineAPI.Network
 
         private void WritePacket(IPacket packet)
         {
-            Log.TraceFormat("C->S {0}", packet.GetType());
+            Log.TraceFormat("C->S {0}", packet.GetType().Name);
 
             IPacketInfo packetInfo = _packetInfoSource.GetPacketInfo(packet);
 
@@ -324,7 +324,7 @@ namespace MineAPI.Network
                 packet = packetInfo.ReadPacketFromStream(reader);
 
                 if (memoryStream.Position < data.Length)
-                    Log.WarnFormat("Packet {0} did not read all available data", packetInfo.GetType().Name);
+                    Log.WarnFormat("Packet {0} did not read all available data. Remaining bytes: {1}", packetInfo.Type.Name, data.Length - memoryStream.Position);
             }
 
             return packet;

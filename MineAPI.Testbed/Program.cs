@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Reactive.Linq;
+using MineAPI.Common;
 using MineAPI.Network;
 using MineAPI.Protocol;
 using MineAPI.Protocol.Packets;
 using MineAPI.Protocol.Packets.Login;
 using MineAPI.Protocol.Packets.Play;
+using MineAPI.Protocol.Packets.Play.Clientbound;
+using MineAPI.Protocol.Packets.Play.Serverbound;
 using Serilog;
 
 namespace MineAPI.Testbed
@@ -16,7 +19,7 @@ namespace MineAPI.Testbed
         {
             // Setup log
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+                .MinimumLevel.Debug()
                 .WriteTo.ColoredConsole()
                 .CreateLogger();
 
@@ -50,9 +53,48 @@ namespace MineAPI.Testbed
 
             Console.ReadLine();*/
 
-            network.PacketStream
+            IObservable<IPacket> packetStream = network.PacketStream;
+
+
+            Vector3? currentPosition = null;
+
+            packetStream
                 .OfType<KeepAlivePacket>()
                 .Subscribe(k => network.SendPacket(new KeepAlivePacket {Id = k.Id}));
+
+            packetStream
+                .OfType<PlayerPositionAndLookPacket>()
+                .Subscribe(p =>
+                {
+                    Console.Title = "Position: " + p.Position;
+                    currentPosition = p.Position;
+                    network.SendPacket(new PlayerPositionPacket
+                    {
+                        Position = p.Position,
+                        OnGround = true,
+                    });
+                });
+
+            packetStream
+                .OfType<UpdateHealthPacket>()
+                .Where(p => p.Health < 1)
+                .Subscribe(p =>
+                {
+                    Log.Fatal("Died! Respawning...");
+
+                    network.SendPacket(new ClientStatusPacket {Action = ClientStatusAction.PerformRespawn});
+                });
+
+            packetStream
+                .OfType<UpdateHealthPacket>()
+                .Subscribe(p => Log.Error("Health: {Health}", p.Health));
+
+            Observable.Interval(TimeSpan.FromMilliseconds(50))
+                .Subscribe(_ =>
+                {
+                    if (currentPosition.HasValue)
+                        network.SendPacket(new PlayerPositionPacket {Position = currentPosition.Value, OnGround = true});
+                });
 
             network.SendPacket(new HandshakePacket
             {
