@@ -43,8 +43,14 @@ namespace MineAPI.Protocol
             {
                 case FieldType.Boolean:
                     return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadBool());
+                case FieldType.Byte:
+                    return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadByte());
+                case FieldType.UByte:
+                    return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadUByte());
                 case FieldType.UShort:
                     return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadUShort());
+                case FieldType.Int:
+                    return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadInt());
                 case FieldType.Long:
                     return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadLong());
                 case FieldType.String:
@@ -69,8 +75,14 @@ namespace MineAPI.Protocol
             {
                 case FieldType.Boolean:
                     return (packet, writer) => writer.WriteBool((bool)fieldInfo.GetValue(packet));
+                case FieldType.Byte:
+                    return (packet, writer) => writer.WriteByte((sbyte) fieldInfo.GetValue(packet));
+                case FieldType.UByte:
+                    return (packet, writer) => writer.WriteUByte((byte) fieldInfo.GetValue(packet));
                 case FieldType.UShort:
                     return (packet, writer) => writer.WriteUShort((ushort)fieldInfo.GetValue(packet));
+                case FieldType.Int:
+                    return (packet, writer) => writer.WriteInt((int) fieldInfo.GetValue(packet));
                 case FieldType.Long:
                     return (packet, writer) => writer.WriteLong((long)fieldInfo.GetValue(packet));
                 case FieldType.String:

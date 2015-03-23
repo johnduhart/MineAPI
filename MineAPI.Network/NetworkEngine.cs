@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.SharpZipLib.Zip.Compression;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MineAPI.Common.Logging;
 using MineAPI.Network.Crypto;
@@ -37,6 +38,7 @@ namespace MineAPI.Network
         private IMinecraftStreamWriter _writer;
         private IMinecraftStreamReader _reader;
         private bool _compressionEnabled;
+        private int _compressionThreshold;
         private byte[] _sharedSecret;
 
         public void Connect(IPEndPoint endPoint)
@@ -79,6 +81,9 @@ namespace MineAPI.Network
         {
             while (true)
             {
+                if (!_client.Connected)
+                    return;
+
                 // Send queued packets
                 while (_packetQueue.Count != 0)
                 {
@@ -113,8 +118,10 @@ namespace MineAPI.Network
             var setCompression = packet as SetCompressionPacket?;
             if (setCompression.HasValue)
             {
-                Log.DebugFormat("Compression enabled. Threshold={0}", setCompression.Value.Threshold);
                 _compressionEnabled = true;
+                _compressionThreshold = setCompression.Value.Threshold;
+
+                Log.DebugFormat("Compression enabled. Threshold={0}", _compressionThreshold);
             }
 
             var encyptionRequest = packet as EncryptionRequestPacket?;
@@ -177,12 +184,51 @@ namespace MineAPI.Network
             
             var dataStream = new MemoryStream();
             var dataWriter = new MinecraftStreamWriter(dataStream);
+            dataWriter.WriteVarInt(packetInfo.Id);
             packetInfo.WritePacketToStream(packet, dataWriter);
 
-            // Write packet length and ID
-            _writer.WriteVarInt((int) (dataStream.Length + 1));
-            _writer.WriteVarInt(packetInfo.Id);
-            _baseStream.Write(dataStream.GetBuffer(), 0, (int) dataStream.Length);
+            if (_compressionEnabled)
+            {
+                // Packet ID + Data
+                byte[] compressedData;
+                int dataLength;
+
+                if (dataStream.Length > _compressionThreshold)
+                {
+                    // Compress the packet id + data
+                    using (var outputStream = new MemoryStream())
+                    using (var inputStream = new DeflaterOutputStream(outputStream, new Deflater(0)))
+                    {
+                        inputStream.Write(dataStream.GetBuffer(), 0, (int) dataStream.Length);
+                        inputStream.Close();
+
+                        compressedData = outputStream.ToArray();
+                    }
+
+                    dataLength = compressedData.Length;
+                }
+                else
+                {
+                    // Not really compressed
+                    compressedData = dataStream.ToArray();
+                    dataLength = 0;
+                }
+
+                int packetLength = dataLength.GetVarIntLength() + compressedData.Length;
+
+                // Packet length, data length, then compressed data
+                _writer.WriteVarInt(packetLength);
+                _writer.WriteVarInt(dataLength);
+                _baseStream.Write(compressedData, 0, compressedData.Length);
+            }
+            else
+            {
+                // Write packet length and ID
+                _writer.WriteVarInt((int) dataStream.Length);
+                //_writer.WriteVarInt(packetInfo.Id);
+                _baseStream.Write(dataStream.GetBuffer(), 0, (int)dataStream.Length);
+            }
+            
 
             _networkStream.Flush();
         }

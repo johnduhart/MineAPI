@@ -1,6 +1,6 @@
 ﻿namespace MineAPI.Protocol.Packets
 {
-    [Packet(0x00, PacketDirection.Serverbound)]
+    [Packet(0x00, PacketDirection.Serverbound, State = NetworkState.None)]
     public struct HandshakePacket : IPacket, IStateChangePacket
     {
         [PacketField(0, FieldType.VarInt)]

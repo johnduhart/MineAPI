@@ -16,6 +16,7 @@ namespace MineAPI.Protocol
         {
             Id = id;
             Direction = direction;
+            State = NetworkState.Play;
         }
     }
 }

@@ -39,20 +39,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IntExtensions.cs" />
     <Compile Include="IO\IMinecraftStreamReader.cs" />
     <Compile Include="IO\IMinecraftStreamWriter.cs" />
     <Compile Include="IO\MinecraftStreamReader.cs" />
     <Compile Include="IO\MinecraftStreamWriter.cs" />
     <Compile Include="IPacket.cs" />
+    <Compile Include="IPacketInfo.cs" />
+    <Compile Include="IPacketInfoSource.cs" />
     <Compile Include="NetworkState.cs" />
     <Compile Include="PacketAttribute.cs" />
     <Compile Include="PacketDirection.cs" />
-    <Compile Include="PacketLocator.cs" />
+    <Compile Include="PacketFieldAction.cs" />
+    <Compile Include="PacketFieldActionBuilder.cs" />
+    <Compile Include="PacketInfo.cs" />
+    <Compile Include="PacketInfoBuilder.cs" />
+    <Compile Include="PacketInfoSource.cs" />
     <Compile Include="Packets\FieldType.cs" />
     <Compile Include="Packets\HandshakePacket.cs" />
     <Compile Include="Packets\IStateChangePacket.cs" />
     <Compile Include="Packets\Login\LoginStartPacket.cs" />
     <Compile Include="Packets\PacketFieldAttribute.cs" />
+    <Compile Include="Packets\Play\ClientChatMessagePacket.cs" />
+    <Compile Include="Packets\Play\KeepAlivePacket.cs" />
+    <Compile Include="Packets\Play\PlayGamePacket.cs" />
+    <Compile Include="Packets\Play\TimeUpdatePacket.cs" />
     <Compile Include="Packets\Status\RequestPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
