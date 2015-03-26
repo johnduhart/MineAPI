@@ -312,7 +312,9 @@ namespace MineAPI.Network
 
             if (packetInfo == null)
             {
-                Log.WarnFormat("S->C Unkown packet 0x{0:X2}. Size: {1} bytes", packetId, data.Length);
+
+                // TODO: Change back to warning once more packets are implemented
+                Log.DebugFormat("S->C Unkown packet 0x{0:X2}. Size: {1} bytes", packetId, data.Length);
                 return null;
             }
 

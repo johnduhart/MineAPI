@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using MineAPI.Common;
@@ -19,7 +20,7 @@ namespace MineAPI.Testbed
         {
             // Setup log
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
                 .WriteTo.ColoredConsole()
                 .CreateLogger();
 
@@ -53,6 +54,10 @@ namespace MineAPI.Testbed
 
             Console.ReadLine();*/
 
+            const string playerOfInterest = "compwhizii";
+            PlayerUuid? interestUuid = null;
+            int? interestEid = null;
+
             IObservable<IPacket> packetStream = network.PacketStream;
 
 
@@ -82,7 +87,9 @@ namespace MineAPI.Testbed
                 {
                     Log.Fatal("Died! Respawning...");
 
-                    network.SendPacket(new ClientStatusPacket {Action = ClientStatusAction.PerformRespawn});
+                    Observable.Timer(TimeSpan.FromSeconds(5))
+                        .Subscribe(
+                            _ => network.SendPacket(new ClientStatusPacket {Action = ClientStatusAction.PerformRespawn}));
                 });
 
             packetStream
@@ -95,6 +102,64 @@ namespace MineAPI.Testbed
                     if (currentPosition.HasValue)
                         network.SendPacket(new PlayerPositionPacket {Position = currentPosition.Value, OnGround = true});
                 });
+
+            packetStream
+                .OfType<EntityVelocityPacket>()
+                .Subscribe(p => Log.Warning("Velocity: EID: {0}, X: {1}, Y: {2}, Z: {3}",
+                    p.EntityId, p.VelocityX, p.VelocityY, p.VelocityZ));
+
+            packetStream
+                .OfType<EntityRelativeMovePacket>()
+                .Subscribe(p => Log.Warning("RelativeMove: EID: {0}, X: {1}, Y: {2}, Z: {3}",
+                    p.EntityId, p.DeltaPosition.X, p.DeltaPosition.Y, p.DeltaPosition.Z));
+
+            packetStream
+                .OfType<EntityLookAndRelativeMovePacket>()
+                .Subscribe(p => Log.Warning("RelativeMove: EID: {0}, X: {1}, Y: {2}, Z: {3}",
+                    p.EntityId, p.DeltaPosition.X, p.DeltaPosition.Y, p.DeltaPosition.Z));
+
+            packetStream
+                .OfType<EntityTeleportPacket>()
+                .Subscribe(p => Log.Warning("Teleport: EID: {0}, X: {1}, Y: {2}, Z: {3}",
+                    p.EntityId, p.Position.X, p.Position.Y, p.Position.Z));
+
+            packetStream
+                .OfType<PlayerListItemPacket>()
+                .Where(p => p.Action == PlayerListAction.AddPlayer)
+                .SelectMany(p => p.PlayerList.Cast<PlayerListItemActionAddPlayer>())
+                .Subscribe(p =>
+                {
+                    Log.Information("Player added. UUID: {UUID} Username: {Username} Ping: {Ping}", p.Uuid, p.Name, p.Ping);
+
+                    if (p.Name == playerOfInterest)
+                    {
+                        Log.Error("Player is of interest!");
+                        interestUuid = p.Uuid;
+                    }
+                });
+
+            packetStream
+                .OfType<PlayerListItemPacket>()
+                .Where(p => p.Action == PlayerListAction.RemovePlayer)
+                .SelectMany(p => p.PlayerList.Cast<PlayerListItemActionRemovePlayer>())
+                .Subscribe(p =>
+                {
+                    Log.Information("Player removed. UUID: {UUID}", p.Uuid);
+                });
+
+            packetStream
+                .OfType<SpawnPlayerPacket>()
+                .Subscribe(p => Log.Information("Player spawned: {EID}, UUID: {UUID}", p.EntityId, p.PlayerUuid));
+
+            packetStream
+                .OfType<SpawnPlayerPacket>()
+                .Where(p => p.PlayerUuid == interestUuid)
+                .Subscribe(p =>
+                {
+                    Log.Fatal("Interest user spawned. EID: {EID}", p.EntityId);
+                    interestEid = p.EntityId;
+                });
+
 
             network.SendPacket(new HandshakePacket
             {

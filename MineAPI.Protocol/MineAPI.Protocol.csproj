@@ -73,6 +73,7 @@
     <Compile Include="Packets\Play\Clientbound\EntityTeleportPacket.cs" />
     <Compile Include="Packets\Play\Clientbound\EntityVelocityPacket.cs" />
     <Compile Include="Packets\Play\Clientbound\HeldItemChangePacket.cs" />
+    <Compile Include="Packets\Play\Clientbound\PlayerListItemPacket.cs" />
     <Compile Include="Packets\Play\Clientbound\PlayerPositionAndLookFlags.cs" />
     <Compile Include="Packets\Play\Clientbound\PlayerPositionAndLookPacket.cs" />
     <Compile Include="Packets\Play\Clientbound\PlayGamePacket.cs" />

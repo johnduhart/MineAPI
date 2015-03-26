@@ -15,6 +15,10 @@ namespace MineAPI.Protocol
 
         public void BuildActionsForPacket(PacketInfo packetInfo)
         {
+            // Manual packets require no field actions
+            if (typeof(IManualPacket).IsAssignableFrom(packetInfo.Type))
+                return;
+
             var actionList = new List<PacketFieldAction>();
             var fields = GetFieldsOnPacket(packetInfo.Type);
 
@@ -48,6 +52,8 @@ namespace MineAPI.Protocol
                     return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadByte());
                 case FieldType.UByte:
                     return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadUByte());
+                case FieldType.Short:
+                    return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadShort());
                 case FieldType.UShort:
                     return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadUShort());
                 case FieldType.Int:
@@ -78,7 +84,7 @@ namespace MineAPI.Protocol
                             fieldInfo.SetValue(packet,
                                 new Vector3(reader.ReadByte() / 32.0f, reader.ReadByte() / 32.0f, reader.ReadByte() / 32.0f));
                 case FieldType.UUID:
-                    return (packet, reader) => fieldInfo.SetValue(packet, reader.ReadByteArray(16));
+                    return (packet, reader) => fieldInfo.SetValue(packet, new PlayerUuid(reader.ReadByteArray(16)));
                 case FieldType.ByteArray:
                     return (packet, reader) =>
                     {
@@ -113,7 +119,9 @@ namespace MineAPI.Protocol
                 case FieldType.Byte:
                     return (packet, writer) => writer.WriteByte((sbyte) fieldInfo.GetValue(packet));
                 case FieldType.UByte:
-                    return (packet, writer) => writer.WriteUByte((byte) fieldInfo.GetValue(packet));
+                    return (packet, writer) => writer.WriteUByte((byte)fieldInfo.GetValue(packet));
+                case FieldType.Short:
+                    return (packet, writer) => writer.WriteShort((short)fieldInfo.GetValue(packet));
                 case FieldType.UShort:
                     return (packet, writer) => writer.WriteUShort((ushort)fieldInfo.GetValue(packet));
                 case FieldType.Int:

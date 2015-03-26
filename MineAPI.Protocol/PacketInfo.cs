@@ -16,6 +16,14 @@ namespace MineAPI.Protocol
         {
             var packet = (IPacket)Activator.CreateInstance(Type);
 
+            var manualPacket = packet as IManualPacket;
+            if (manualPacket != null)
+            {
+                manualPacket.ReadPacket(reader);
+
+                return packet;
+            }
+
             foreach (var packetFieldAction in FieldActions)
             {
                 packetFieldAction.ReaderAction(packet, reader);
@@ -26,6 +34,14 @@ namespace MineAPI.Protocol
 
         public void WritePacketToStream(IPacket packet, IMinecraftStreamWriter writer)
         {
+            var manualPacket = packet as IManualPacket;
+            if (manualPacket != null)
+            {
+                manualPacket.WritePacket(writer);
+
+                return;
+            }
+
             foreach (var packetFieldAction in FieldActions)
             {
                 packetFieldAction.WriterAction(packet, writer);

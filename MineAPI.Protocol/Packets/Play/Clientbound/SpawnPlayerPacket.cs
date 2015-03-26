@@ -9,7 +9,7 @@ namespace MineAPI.Protocol.Packets.Play.Clientbound
         public int EntityId;
 
         [PacketField(1, FieldType.UUID)]
-        public byte[] PlayerUuid;
+        public PlayerUuid PlayerUuid;
 
         [PacketField(2, FieldType.Vector3FixedPoint)]
         public Vector3 Position;
